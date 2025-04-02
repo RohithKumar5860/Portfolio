@@ -130,6 +130,8 @@ nav {
   color: var(--light-text);
   transition: all 0.3s ease;
   margin-left:0px;
+  position:absolute;
+  left:10px ;
 }
 
 .dark-mode .logo {
