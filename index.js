@@ -11,46 +11,65 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Apply theme with smooth transitions
   const applyTheme = (isDark) => {
-    if (isDark) {
-      body.classList.add('dark-mode');
-      toggleBall.style.transform = 'translateX(30px)';
-      moonIcon.style.opacity = '0';
-      sunIcon.style.opacity = '1';
-    } else {
-      body.classList.remove('dark-mode');
-      toggleBall.style.transform = 'translateX(0)';
-      moonIcon.style.opacity = '1';
-      sunIcon.style.opacity = '0';
+    try {
+      if (isDark) {
+        body.classList.add('dark-mode');
+        toggleBall.style.transform = 'translateX(30px)';
+        moonIcon.style.opacity = '0';
+        sunIcon.style.opacity = '1';
+      } else {
+        body.classList.remove('dark-mode');
+        toggleBall.style.transform = 'translateX(0)';
+        moonIcon.style.opacity = '1';
+        sunIcon.style.opacity = '0';
+      }
+    } catch (error) {
+      console.error('Error applying theme:', error);
     }
   };
   
   // Initialize theme
   const initTheme = () => {
-    const savedMode = localStorage.getItem('darkMode');
-    const systemPrefersDark = colorSchemeMedia.matches;
-    
-    if (savedMode === null) {
-      applyTheme(systemPrefersDark);
-      localStorage.setItem('darkMode', systemPrefersDark);
-    } else {
-      applyTheme(savedMode === 'true');
+    try {
+      const savedMode = localStorage.getItem('darkMode');
+      const systemPrefersDark = colorSchemeMedia.matches;
+      
+      if (savedMode === null) {
+        applyTheme(systemPrefersDark);
+        localStorage.setItem('darkMode', systemPrefersDark);
+      } else {
+        applyTheme(savedMode === 'true');
+      }
+    } catch (error) {
+      console.error('Error initializing theme:', error);
+      // Fallback to system preference if localStorage fails
+      applyTheme(colorSchemeMedia.matches);
     }
   };
   
   // Toggle handler with animation
   themeToggle.addEventListener('click', () => {
-    const isDark = !body.classList.contains('dark-mode');
-    applyTheme(isDark);
-    localStorage.setItem('darkMode', isDark);
+    try {
+      const isDark = !body.classList.contains('dark-mode');
+      applyTheme(isDark);
+      localStorage.setItem('darkMode', isDark);
+    } catch (error) {
+      console.error('Error toggling theme:', error);
+    }
   });
   
   // Watch for system preference changes
   colorSchemeMedia.addEventListener('change', (e) => {
-    if (localStorage.getItem('darkMode') === null) {
-      applyTheme(e.matches);
+    try {
+      if (localStorage.getItem('darkMode') === null) {
+        applyTheme(e.matches);
+      }
+    } catch (error) {
+      console.error('Error handling system preference change:', error);
     }
   });
   
+  // Initialize theme on page load
   initTheme();
 
   // ===== Responsive Navigation =====
@@ -94,9 +113,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     hamburger.addEventListener('click', toggleMobileMenu);
 
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (navLinks.classList.contains('active') && 
+          !navLinks.contains(e.target) && 
+          !hamburger.contains(e.target)) {
+        closeMobileMenu();
+      }
+    });
+
+    // Close menu when clicking links
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', closeMobileMenu);
     });
+
+    // Prevent body scroll when menu is open
+    function toggleBodyScroll(enable) {
+      document.body.style.overflow = enable ? '' : 'hidden';
+    }
 
     function animateMenuItems() {
       navItems.forEach((item, index) => {
@@ -108,12 +142,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function toggleMobileMenu() {
+      const isOpening = !navLinks.classList.contains('active');
       hamburger.classList.toggle('active');
       navLinks.classList.toggle('active');
       document.body.classList.toggle('nav-active');
-      document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+      toggleBodyScroll(!isOpening);
 
-      if (navLinks.classList.contains('active')) {
+      if (isOpening) {
         animateMenuItems();
       }
     }
@@ -122,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
       hamburger.classList.remove('active');
       navLinks.classList.remove('active');
       document.body.classList.remove('nav-active');
-      document.body.style.overflow = '';
+      toggleBodyScroll(true);
     }
   }
 
