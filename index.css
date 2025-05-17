@@ -21,6 +21,13 @@
   --dark-shadow: rgba(0, 0, 0, 0.3); /* Added from Cyber Neon */
 
   font-size: 16px;
+
+  /* Z-index Management */
+  --z-header: 1000;
+  --z-nav: 1001;
+  --z-modal: 2000;
+  --z-particles: 1;
+  --z-content: 2;
 }
 
 /* ===== Enhanced Base Styles ===== */
@@ -29,9 +36,9 @@
   padding: 0;
   box-sizing: border-box;
   transition: 
-  background-color 0.4s ease, 
-  color 0.3s ease,
-  border-color 0.3s ease; /* Enhanced from Cyber Neon */
+    background-color 0.4s ease, 
+    color 0.3s ease,
+    border-color 0.3s ease; /* Enhanced from Cyber Neon */
 }
 
 html {
@@ -55,9 +62,17 @@ body.dark-mode {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  position: relative;
+  z-index: var(--z-content);
 }
+
 section {
   padding: 80px 0;
+  position: relative;
+  z-index: 1;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .section-title {
@@ -88,13 +103,14 @@ section {
   0% { width: 0; }
   100% { width: 80px; }
 }
+
 /* ===== Base Navigation Styles ===== */
 header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000;
+  z-index: var(--z-header);
   background-color: rgba(255, 255, 255, 0.97);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.4s ease;
@@ -150,6 +166,7 @@ nav {
   gap: 30px;
   margin: 0;
   padding: 0;
+  z-index: var(--z-nav);
 }
 
 .nav-links li {
@@ -362,6 +379,9 @@ nav {
 
 .hero-content {
   flex: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 .hero h1 {
@@ -375,6 +395,8 @@ nav {
   margin-bottom: 30px;
   color: var(--light-text);
   opacity: 0.9;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .dark-mode .hero-subtitle {
@@ -481,6 +503,9 @@ nav {
   display: flex;
   gap: 40px;
   align-items: center;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 .about-text {
@@ -617,6 +642,9 @@ nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 .skill-category {
@@ -709,6 +737,9 @@ nav {
   position: relative;
   max-width: 800px;
   margin: 0 auto;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 .timeline::before {
@@ -820,6 +851,9 @@ nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 /* ===== Enhanced Project Cards ===== */
@@ -957,6 +991,9 @@ nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 40px;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 .contact-info {
@@ -1286,7 +1323,7 @@ footer {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: -1;
+  z-index: var(--z-particles);
 }
 
 .particle {
@@ -1398,34 +1435,52 @@ footer {
   }
 }
 
-/* ===== Enhanced Buttons ===== */
+/* ===== Enhanced Button Styles ===== */
 .btn {
   display: inline-block;
   padding: 12px 30px;
-  background: var(--light-primary);
-  color: white;
+  background: linear-gradient(135deg, var(--light-primary), var(--light-secondary));
+  color: white !important;
   border: none;
   border-radius: 30px;
-  cursor: pointer;
-  text-decoration: none;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px var(--light-shadow);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
-.dark-mode .btn {
-  background: var(--dark-primary);
-  box-shadow: 0 4px 15px var(--dark-shadow);
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--light-secondary), var(--light-primary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
 .btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px var(--light-shadow);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.dark-mode .btn:hover {
-  box-shadow: 0 10px 20px var(--dark-shadow);
+.btn:hover::before {
+  opacity: 1;
+}
+
+.dark-mode .btn {
+  background: linear-gradient(135deg, var(--dark-primary), var(--dark-secondary));
+}
+
+.dark-mode .btn::before {
+  background: linear-gradient(135deg, var(--dark-secondary), var(--dark-primary));
 }
 
 .btn-secondary {
@@ -1443,12 +1498,13 @@ footer {
 
 .btn-secondary:hover {
   background: var(--light-primary);
-  color: white;
+  color: white !important;
   box-shadow: 0 10px 20px var(--light-shadow);
 }
 
 .dark-mode .btn-secondary:hover {
   background: var(--dark-primary);
+  color: white !important;
   box-shadow: 0 10px 20px var(--dark-shadow);
 }
 
@@ -1558,7 +1614,7 @@ footer {
 
 @media (max-width: 480px) {
   :root {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
@@ -1881,3 +1937,19 @@ footer {
   }
 }
 
+/* ===== Section Visibility Fixes ===== */
+.section-entrance {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+/* Ensure content is visible after animations */
+.hero-content,
+.about-content,
+.skills-container,
+.projects-grid,
+.timeline,
+.contact-content {
+  opacity: 1 !important;
+}
