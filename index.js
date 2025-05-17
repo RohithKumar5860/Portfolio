@@ -545,3 +545,200 @@ window.addEventListener('load', function() {
     gsap.to(window, { duration: 0.3, scrollTo: 0 });
   }
 });
+
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
+// Enhanced animations with visibility fixes
+function initAnimations() {
+    // Hero section animations
+    gsap.from('.hero-content', {
+        duration: 1,
+        y: 50,
+        opacity: 0,
+        ease: 'power3.out',
+        clearProps: 'all'
+    });
+
+    gsap.from('.photo-frame', {
+        duration: 1,
+        scale: 0.8,
+        opacity: 0,
+        ease: 'back.out(1.7)',
+        delay: 0.3,
+        clearProps: 'all'
+    });
+
+    // Tech icons animation
+    gsap.from('.tech-icons i', {
+        duration: 0.5,
+        scale: 0,
+        opacity: 0,
+        stagger: 0.2,
+        ease: 'back.out(1.7)',
+        clearProps: 'all'
+    });
+
+    // Section entrance animations with visibility fix
+    gsap.utils.toArray('.section-entrance').forEach(section => {
+        gsap.from(section, {
+            scrollTrigger: {
+                trigger: section,
+                start: 'top 80%',
+                toggleActions: 'play none none reverse'
+            },
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out',
+            clearProps: 'all'
+        });
+    });
+
+    // Skill bars animation
+    gsap.utils.toArray('.skill-progress').forEach(progress => {
+        const width = progress.getAttribute('data-width');
+        gsap.to(progress, {
+            scrollTrigger: {
+                trigger: progress,
+                start: 'top 80%'
+            },
+            width: width + '%',
+            duration: 1.5,
+            ease: 'power2.out'
+        });
+    });
+
+    // Project cards animation
+    gsap.utils.toArray('.project-card').forEach(card => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%'
+            },
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'power2.out',
+            clearProps: 'all'
+        });
+    });
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Ensure all sections are visible
+    document.querySelectorAll('section').forEach(section => {
+        section.style.opacity = '1';
+        section.style.visibility = 'visible';
+    });
+
+    // Initialize animations
+    initAnimations();
+    initThemeToggle();
+    createParticles();
+});
+
+// Fix for smooth scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            gsap.to(window, {
+                duration: 1,
+                scrollTo: {
+                    y: target,
+                    offsetY: 70
+                },
+                ease: 'power2.inOut'
+            });
+        }
+    });
+});
+
+// Theme toggle functionality
+function initThemeToggle() {
+    const themeToggle = document.querySelector('.theme-toggle');
+    const body = document.body;
+    
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        const isDarkMode = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+        
+        // Animate toggle ball
+        gsap.to('.toggle-ball', {
+            x: isDarkMode ? 30 : 0,
+            duration: 0.4,
+            ease: 'power2.inOut'
+        });
+    });
+
+    // Check for saved theme preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        body.classList.add('dark-mode');
+        gsap.set('.toggle-ball', { x: 30 });
+    }
+}
+
+// Create particles
+function createParticles() {
+    const container = document.createElement('div');
+    container.className = 'particles-container';
+    document.body.appendChild(container);
+
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        container.appendChild(particle);
+    }
+}
+
+// Mobile menu functionality
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    hamburger.classList.toggle('active');
+    
+    // Animate menu items
+    gsap.from('.nav-links li', {
+        duration: 0.5,
+        y: 20,
+        opacity: 0,
+        stagger: 0.1,
+        ease: 'power2.out',
+        clearProps: 'all'
+    });
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+        navLinks.classList.remove('active');
+        hamburger.classList.remove('active');
+    }
+});
+
+function setupSmoothScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        gsap.to(window, {
+          duration: 1,
+          scrollTo: {
+            y: target,
+            offsetY: 70
+          },
+          ease: 'power3.inOut'
+        });
+      }
+    });
+  });
+}
