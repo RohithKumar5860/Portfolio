@@ -48,15 +48,21 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   
   // Toggle handler with animation
-  themeToggle.addEventListener('click', () => {
-    try {
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
       const isDark = !body.classList.contains('dark-mode');
       applyTheme(isDark);
-      localStorage.setItem('darkMode', isDark);
-    } catch (error) {
-      console.error('Error toggling theme:', error);
-    }
-  });
+      
+      try {
+        localStorage.setItem('darkMode', isDark);
+      } catch (error) {
+        console.error('Error saving theme preference:', error);
+      }
+    });
+  }
   
   // Watch for system preference changes
   colorSchemeMedia.addEventListener('change', (e) => {
@@ -633,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         section.style.visibility = 'visible';
     });
 
-    // Initialize animations
+    // Initialize animations and theme
     initAnimations();
     initThemeToggle();
     createParticles();
@@ -661,26 +667,52 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 function initThemeToggle() {
     const themeToggle = document.querySelector('.theme-toggle');
     const body = document.body;
+    const toggleBall = document.querySelector('.toggle-ball');
+    const moonIcon = document.querySelector('.fa-moon');
+    const sunIcon = document.querySelector('.fa-sun');
     
-    themeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        const isDarkMode = body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode);
-        
-        // Animate toggle ball
-        gsap.to('.toggle-ball', {
-            x: isDarkMode ? 30 : 0,
-            duration: 0.4,
-            ease: 'power2.inOut'
-        });
-    });
-
-    // Check for saved theme preference
-    if (localStorage.getItem('darkMode') === 'true') {
-        body.classList.add('dark-mode');
-        gsap.set('.toggle-ball', { x: 30 });
+    // Apply theme
+    function applyTheme(isDark) {
+        if (isDark) {
+            body.classList.add('dark-mode');
+            toggleBall.style.transform = 'translateX(30px)';
+            moonIcon.style.opacity = '0';
+            sunIcon.style.opacity = '1';
+        } else {
+            body.classList.remove('dark-mode');
+            toggleBall.style.transform = 'translateX(0)';
+            moonIcon.style.opacity = '1';
+            sunIcon.style.opacity = '0';
+        }
     }
+    
+    // Initialize theme
+    function initTheme() {
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode !== null) {
+            applyTheme(savedMode === 'true');
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark);
+            localStorage.setItem('darkMode', prefersDark);
+        }
+    }
+    
+    // Toggle theme
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const isDark = !body.classList.contains('dark-mode');
+            applyTheme(isDark);
+            localStorage.setItem('darkMode', isDark);
+        });
+    }
+    
+    // Initialize on load
+    initTheme();
 }
+
+// Call initThemeToggle when DOM is loaded
+document.addEventListener('DOMContentLoaded', initThemeToggle);
 
 // Create particles
 function createParticles() {
